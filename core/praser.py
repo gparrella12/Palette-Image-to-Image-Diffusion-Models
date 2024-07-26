@@ -7,6 +7,8 @@ from functools import partial
 import importlib
 from types  import FunctionType
 import shutil
+
+
 def init_obj(opt, logger, *args, default_file_name='default file', given_module=None, init_type='Network', **modify_kwargs):
     """
     finds a function handle with the name given as 'name' in config,
@@ -45,7 +47,8 @@ def init_obj(opt, logger, *args, default_file_name='default file', given_module=
             ret.__name__  = attr.__name__
             # ret = attr
         logger.info('{} [{:s}() form {:s}] is created.'.format(init_type, class_name, file_name))
-    except:
+    except Exception as e:
+        print(e, "\n\n\n")
         raise NotImplementedError('{} [{:s}() form {:s}] not recognized.'.format(init_type, class_name, file_name))
     return ret
 

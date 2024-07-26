@@ -1,5 +1,5 @@
 {
-    "name": "uncropping_places2", // experiments name
+    "name": "reconstruction", // experiments name
     "gpu_ids": [0], // gpu ids list, default is single 0
     "seed" : 12, // random seed, seed <0 represents randomization not used 
     "finetune_norm": false, // find the parameters to optimize
@@ -17,13 +17,9 @@
     "datasets": { // train or test
         "train": { 
             "which_dataset": {  // import designated dataset using arguments 
-                "name": ["data.dataset", "UncroppingDataset"], // import Dataset() class / function(not recommend) from data.dataset.py (default is [data.dataset.py])
+                "name": ["data.dataset", "ReconstructionDataset"], // import Dataset() class / function(not recommend) from data.dataset.py (default is [data.dataset.py])
                 "args":{ // arguments to initialize dataset
-                    "data_root": "datasets/place365/flist/train.flist",
-                    "data_len": -1,
-                    "mask_config": {
-                        "mask_mode": "hybrid" // onedirection | fourdirection | hybrid | manual
-                    }
+                    "data_root": "/user/gparrella/cpa_enhanced/datasets/my_dataset"
                 } 
             },
             "dataloader":{
@@ -46,14 +42,9 @@
         },
         "test": { 
             "which_dataset": {
-                "name": "UncroppingDataset", // import Dataset() class / function(not recommend) from default file
+                "name": "ReconstructionDataset", // import Dataset() class / function(not recommend) from default file
                 "args":{
-                    "data_root": "datasets/place365/flist/test.flist",
-                    "mask_config": {
-                        "mask_mode": "onedirection",
-                        "shape": []
-                    }
-                }
+                    "data_root": "/user/gparrella/cpa_enhanced/datasets/my_dataset",
             },
             "dataloader":{
                 "args":{

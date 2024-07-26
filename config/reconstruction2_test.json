@@ -1,5 +1,5 @@
 {
-    "name": "uncropping_places2", // experiments name
+    "name": "reconstruction2", // experiments name
     "gpu_ids": [0], // gpu ids list, default is single 0
     "seed" : 12, // random seed, seed <0 represents randomization not used 
     "finetune_norm": false, // find the parameters to optimize
@@ -10,20 +10,16 @@
         "tb_logger": "tb_logger", // path of tensorboard logger
         "results": "results",
         "checkpoint": "checkpoint",
-        // "resume_state": "experiments/inpainting_places2_220413_143231/checkpoint/25" 
-        "resume_state": null // ex: 100, loading .state  and .pth from given epoch and iteration
+        "resume_state": "/user/gparrella/Palette-Image-to-Image-Diffusion-Models/to_test/261" 
+        // "resume_state": null // ex: 100, loading .state  and .pth from given epoch and iteration
     },
 
     "datasets": { // train or test
         "train": { 
             "which_dataset": {  // import designated dataset using arguments 
-                "name": ["data.dataset", "UncroppingDataset"], // import Dataset() class / function(not recommend) from data.dataset.py (default is [data.dataset.py])
+                "name": ["data.dataset", "ReconstructionDataset"], // import Dataset() class / function(not recommend) from data.dataset.py (default is [data.dataset.py])
                 "args":{ // arguments to initialize dataset
-                    "data_root": "datasets/place365/flist/train.flist",
-                    "data_len": -1,
-                    "mask_config": {
-                        "mask_mode": "hybrid" // onedirection | fourdirection | hybrid | manual
-                    }
+                    "data_root": "/user/gparrella/cpa_enhanced/datasets/my_dataset"
                 } 
             },
             "dataloader":{
@@ -46,13 +42,9 @@
         },
         "test": { 
             "which_dataset": {
-                "name": "UncroppingDataset", // import Dataset() class / function(not recommend) from default file
+                "name": "ReconstructionDataset", // import Dataset() class / function(not recommend) from default file
                 "args":{
-                    "data_root": "datasets/place365/flist/test.flist",
-                    "mask_config": {
-                        "mask_mode": "onedirection",
-                        "shape": []
-                    }
+                    "data_root": "/user/gparrella/cpa_enhanced/datasets/my_dataset"
                 }
             },
             "dataloader":{
@@ -70,7 +62,7 @@
             "name": ["models.model", "Palette"], // import Model() class / function(not recommend) from models.model.py (default is [models.model.py])
             "args": {
                 "sample_num": 8, // process of each image
-                "task": "uncropping",
+                "task": "reconstruction",
                 "ema_scheduler": {
                     "ema_start": 1,
                     "ema_iter": 1,
@@ -98,26 +90,27 @@
                             8
                         ],
                         "attn_res": [
-                            // 32,
-                            16
+                             32
+                            // 16
                             // 8
                         ],
                         "num_head_channels": 32,
                         "res_blocks": 2,
                         "dropout": 0.2,
-                        "image_size": 256
+                        "image_size": 64
                     },
                     "beta_schedule": {
                         "train": {
                             "schedule": "linear",
-                            "n_timestep": 2000,
+                            "n_timestep": 4000,
                             // "n_timestep": 5, // debug
                             "linear_start": 1e-6,
                             "linear_end": 0.01
                         },
                         "test": {
                             "schedule": "linear",
-                            "n_timestep": 1000,
+                            "n_timestep": 2000,
+                            // "n_timestep": 5, // debug
                             "linear_start": 1e-4,
                             "linear_end": 0.09
                         }
@@ -146,7 +139,7 @@
         "val_epoch": 1, // valdation every specified number of epochs
         "save_checkpoint_epoch": 1,
         "log_iter": 1e4, // log every specified number of iterations
-        "tensorboard" : true // tensorboardX enable
+        "tensorboard" : false // tensorboardX enable
     },
     
     "debug": { // arguments in debug mode, which will replace arguments in train

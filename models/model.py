@@ -101,6 +101,16 @@ class Palette(BaseModel):
         self.results_dict = self.results_dict._replace(name=ret_path, result=ret_result)
         return self.results_dict._asdict()
 
+    def save_current_results_test(self):
+        ret_path = []
+        ret_result = []
+        for idx in range(self.batch_size):
+            ret_path.append('Out_{}'.format(self.path[idx]))
+            ret_result.append(self.visuals[idx-self.batch_size].detach().float().cpu())
+
+        self.results_dict = self.results_dict._replace(name=ret_path, result=ret_result)
+        return self.results_dict._asdict()
+    
     def train_step(self):
         self.netG.train()
         self.train_metrics.reset()
@@ -190,6 +200,44 @@ class Palette(BaseModel):
                 for key, value in self.get_current_visuals(phase='test').items():
                     self.writer.add_images(key, value)
                 self.writer.save_images(self.save_current_results())
+        
+        test_log = self.test_metrics.result()
+        ''' save logged informations into log dict ''' 
+        test_log.update({'epoch': self.epoch, 'iters': self.iter})
+
+        ''' print logged informations to the screen and tensorboard ''' 
+        for key, value in test_log.items():
+            self.logger.info('{:5s}: {}\t'.format(str(key), value))
+
+    def test_dataloader(self, data_loader, result_folder_path):
+        self.netG.eval()
+        self.test_metrics.reset()
+        with torch.no_grad():
+            for phase_data in tqdm.tqdm(data_loader):
+                self.set_input(phase_data)
+                if self.opt['distributed']:
+                    if self.task in ['inpainting','uncropping']:
+                        self.output, self.visuals = self.netG.module.restoration(self.cond_image, y_t=self.cond_image, 
+                            y_0=self.gt_image, mask=self.mask, sample_num=self.sample_num)
+                    else:
+                        self.output, self.visuals = self.netG.module.restoration(self.cond_image, sample_num=self.sample_num)
+                else:
+                    if self.task in ['inpainting','uncropping']:
+                        self.output, self.visuals = self.netG.restoration(self.cond_image, y_t=self.cond_image, 
+                            y_0=self.gt_image, mask=self.mask, sample_num=self.sample_num)
+                    else:
+                        self.output, self.visuals = self.netG.restoration(self.cond_image, sample_num=self.sample_num)
+                     
+                #self.iter += self.batch_size
+                #self.writer.set_iter(self.epoch, self.iter, phase='test')
+                #for met in self.metrics:
+                #    key = met.__name__
+                #    value = met(self.gt_image, self.output)
+                #    self.test_metrics.update(key, value)
+                #    self.writer.add_scalar(key, value)
+                #for key, value in self.get_current_visuals(phase='test').items():
+                #    self.writer.add_images(key, value)
+                self.writer.save_images(self.save_current_results_test(), result_folder_path)
         
         test_log = self.test_metrics.result()
         ''' save logged informations into log dict ''' 

@@ -174,3 +174,64 @@ class ColorizationDataset(data.Dataset):
         return len(self.flist)
 
 
+class ReconstructionDataset(data.Dataset):
+    def __init__(self, data_root, image_size=[64, 64], loader=pil_loader):
+        self.data_root = data_root
+        if len(os.listdir(  os.path.join(self.data_root,'x')  )) == 0:
+            raise ValueError('The directory is empty')
+        self.file_list = os.listdir(  os.path.join(self.data_root,'x')  )
+        self.tfs = transforms.Compose([
+                transforms.Resize((image_size[0], image_size[1])),
+                transforms.ToTensor(),
+                #transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5,0.5, 0.5])
+        ])
+        self.loader = loader
+        self.image_size = image_size
+
+    def __getitem__(self, index):
+        ret = {}
+        file_name = self.file_list[index]
+
+        cond_image = self.tfs(self.loader('{}/{}/{}'.format(self.data_root, 'x', file_name)))
+        
+        ground_truth_name = file_name.split('_')[-1].split('.')[0] + '.png'
+        img = self.tfs(self.loader('{}/{}/{}'.format(self.data_root, 'y', ground_truth_name)))
+
+        ret['gt_image'] = img
+        ret['cond_image'] = cond_image
+        ret['path'] = file_name
+        return ret
+
+    def __len__(self):
+        return len( self.file_list )
+
+class ReconstructionDatasetTest(data.Dataset):
+    def __init__(self, data_root, image_size=[64, 64], loader=pil_loader):
+        self.data_root = data_root
+        if len(os.listdir(  os.path.join(self.data_root )  )) == 0:
+            raise ValueError('The directory is empty')
+        self.file_list = os.listdir(  os.path.join(self.data_root )  )
+        self.tfs = transforms.Compose([
+                transforms.Resize((image_size[0], image_size[1])),
+                transforms.ToTensor(),
+                #transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5,0.5, 0.5])
+        ])
+        self.loader = loader
+        self.image_size = image_size
+
+    def __getitem__(self, index):
+        ret = {}
+        file_name = self.file_list[index]
+
+        cond_image = self.tfs(self.loader(os.path.join(self.data_root, file_name)))
+        
+        ground_truth_name = file_name.split('_')[-1].split('.')[0] + '.png'
+        #img = self.tfs(self.loader('{}/{}/{}'.format(self.data_root, 'y', ground_truth_name)))
+
+        #ret['gt_image'] = img
+        ret['cond_image'] = cond_image
+        ret['path'] = file_name
+        return ret
+
+    def __len__(self):
+        return len( self.file_list )

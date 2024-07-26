@@ -98,7 +98,7 @@ class VisualWriter():
         self.epoch = epoch
         self.iter = iter
 
-    def save_images(self, results):
+    def save_images(self, results, other_folder=None):
         result_path = os.path.join(self.result_dir, self.phase)
         os.makedirs(result_path, exist_ok=True)
         result_path = os.path.join(result_path, str(self.epoch))
@@ -110,6 +110,8 @@ class VisualWriter():
             outputs = Util.postprocess(results['result'])
             for i in range(len(names)): 
                 Image.fromarray(outputs[i]).save(os.path.join(result_path, names[i]))
+                if other_folder is not None and os.path.exists(other_folder):
+                    Image.fromarray(outputs[i]).save(os.path.join(other_folder, names[i]))
         except:
             raise NotImplementedError('You must specify the context of name and result in save_current_results functions of model.')
 
