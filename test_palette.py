@@ -9,7 +9,7 @@ import core.praser as Praser
 import core.util as Util
 from data import define_dataloader
 from models import create_model, define_network, define_loss, define_metric
-from data.dataset import ReconstructionDatasetTest
+from data.dataset import ReconstructionDataset
 
 def main_worker(gpu, ngpus_per_node, opt):
     """  threads running on each GPU """
@@ -53,7 +53,7 @@ def main_worker(gpu, ngpus_per_node, opt):
         writer = phase_writer
     )
 
-    dataset = ReconstructionDatasetTest(args.path)
+    dataset = ReconstructionDataset(args.path, test=True)
     data_loader = torch.utils.data.DataLoader(dataset, batch_size=len(os.listdir(os.path.join(args.path))), shuffle=False)
 
     phase_logger.info('Begin model {}.'.format(opt['phase']))
@@ -64,7 +64,7 @@ def main_worker(gpu, ngpus_per_node, opt):
         
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('-c', '--config', type=str, default='/user/gparrella/Palette-Image-to-Image-Diffusion-Models/config/reconstruction2_test.json', help='JSON file for configuration')
+    parser.add_argument('-c', '--config', type=str, default='/home/prrgpp000/Palette-Image-to-Image-Diffusion-Models/config/reconstructions/reconstruction2.json')
     parser.add_argument('-p', '--path', type=str, default='/user/gparrella/cpa_enhanced/datasets/new_reconstructions/x', help='Path to folder that contains images to restore.')
     parser.add_argument('-ph', '--phase', type=str, choices=['train','test'], help='Run train or test', default='test')
     parser.add_argument('-o', '--out_dir', type=str, default='/user/gparrella/Palette-Image-to-Image-Diffusion-Models/to_test', help='Output directory in which save images.')
