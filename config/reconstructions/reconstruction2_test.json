@@ -1,5 +1,5 @@
 {
-    "name": "reconstruction2", // experiments name
+    "name": "reconstruction_exp", // experiments name
     "gpu_ids": [0], // gpu ids list, default is single 0
     "seed" : 12, // random seed, seed <0 represents randomization not used 
     "finetune_norm": false, // find the parameters to optimize
@@ -10,8 +10,8 @@
         "tb_logger": "tb_logger", // path of tensorboard logger
         "results": "results",
         "checkpoint": "checkpoint",
-        "resume_state": "/user/gparrella/Palette-Image-to-Image-Diffusion-Models/to_test/26" 
-        // "resume_state": null // ex: 100, loading .state  and .pth from given epoch and iteration
+         // "resume_state": "experiments/inpainting_places2_220413_143231/checkpoint/25" 
+        "resume_state": "/user/gparrella/Palette-Image-to-Image-Diffusion-Models/to_test/26" // ex: 100, loading .state  and .pth from given epoch and iteration
     },
 
     "datasets": { // train or test
@@ -19,20 +19,20 @@
             "which_dataset": {  // import designated dataset using arguments 
                 "name": ["data.dataset", "ReconstructionDataset"], // import Dataset() class / function(not recommend) from data.dataset.py (default is [data.dataset.py])
                 "args":{ // arguments to initialize dataset
-                    "data_root": "/user/gparrella/cpa_enhanced/datasets/my_dataset"
+                    "data_root": "/user/gparrella/cpa_enhanced/datasets/reconstructions/training_set"
                 } 
             },
             "dataloader":{
-                "validation_split": 2, // percent or number 
+                "validation_split": 0.2, // percent or number 
                 "args":{ // arguments to initialize train_dataloader
-                    "batch_size": 3, // batch size in each gpu
+                    "batch_size": 64, // batch size in each gpu
                     "num_workers": 4,
                     "shuffle": true,
                     "pin_memory": true,
                     "drop_last": true
                 },
                 "val_args":{ // arguments to initialize valid_dataloader, will overwrite the parameters in train_dataloader
-                    "batch_size": 1, // batch size in each gpu
+                    "batch_size": 32, // batch size in each gpu
                     "num_workers": 4,
                     "shuffle": false,
                     "pin_memory": true,
@@ -44,12 +44,16 @@
             "which_dataset": {
                 "name": "ReconstructionDataset", // import Dataset() class / function(not recommend) from default file
                 "args":{
-                    "data_root": "/user/gparrella/cpa_enhanced/datasets/my_dataset"
+                    "data_root": "/user/gparrella/cpa_enhanced/datasets/reconstructions/validation_set"
+                //    "mask_config": {
+                //        "mask_mode": "onedirection",
+                //        "shape": []
+                //    }
                 }
             },
             "dataloader":{
                 "args":{
-                    "batch_size": 8,
+                    "batch_size": 32,
                     "num_workers": 4,
                     "pin_memory": true
                 }
@@ -91,13 +95,13 @@
                         ],
                         "attn_res": [
                              32
-                            // 16
+                            //16
                             // 8
                         ],
                         "num_head_channels": 32,
                         "res_blocks": 2,
                         "dropout": 0.2,
-                        "image_size": 64
+                        "image_size": 128
                     },
                     "beta_schedule": {
                         "train": {
@@ -109,8 +113,7 @@
                         },
                         "test": {
                             "schedule": "linear",
-                            "n_timestep": 2000,
-                            // "n_timestep": 5, // debug
+                            "n_timestep": 1000,
                             "linear_start": 1e-4,
                             "linear_end": 0.09
                         }
@@ -136,14 +139,14 @@
     "train": { // arguments for basic training
         "n_epoch": 1e8, // max epochs, not limited now
         "n_iter": 1e8, // max interations
-        "val_epoch": 1, // valdation every specified number of epochs
+        "val_epoch": 10000, // valdation every specified number of epochs
         "save_checkpoint_epoch": 1,
         "log_iter": 1e4, // log every specified number of iterations
         "tensorboard" : false // tensorboardX enable
     },
     
     "debug": { // arguments in debug mode, which will replace arguments in train
-        "val_epoch": 1,
+        "val_epoch": 10000,
         "save_checkpoint_epoch": 1,
         "log_iter": 10,
         "debug_split": 50 // percent or number, change the size of dataloder to debug_split.

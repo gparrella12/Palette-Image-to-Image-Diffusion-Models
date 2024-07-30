@@ -195,11 +195,11 @@ class ReconstructionDataset(data.Dataset):
 
         lq_image = self.tfs(self.loader(os.path.join(self.data_root, file_name)))
         
-        ground_truth_name = file_name.split('_')[-1].split('.')[0] + '.png'
-        gt_image = self.tfs(self.loader(os.path.join(os.path.dirname(self.data_root), 'y' , ground_truth_name)))
-
         if not self.test:
+            ground_truth_name = file_name.split('_')[-1].split('.')[0] + '.png'
+            gt_image = self.tfs(self.loader(os.path.join(os.path.dirname(self.data_root), 'y' , ground_truth_name)))
             ret['gt_image'] = gt_image
+            
         ret['cond_image'] = lq_image
         ret['path'] = file_name
         return ret

@@ -64,10 +64,10 @@ def main_worker(gpu, ngpus_per_node, opt):
         
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('-c', '--config', type=str, default='/home/prrgpp000/Palette-Image-to-Image-Diffusion-Models/config/reconstructions/reconstruction2.json')
-    parser.add_argument('-p', '--path', type=str, default='/user/gparrella/cpa_enhanced/datasets/new_reconstructions/x', help='Path to folder that contains images to restore.')
+    parser.add_argument('-c', '--config', type=str, default='/user/gparrella/Palette-Image-to-Image-Diffusion-Models/config/reconstructions/reconstruction2_test.json')
+    parser.add_argument('-p', '--path', type=str, default='/user/gparrella/Palette-Image-to-Image-Diffusion-Models/to_test/inputs', help='Path to folder that contains images to restore.')
     parser.add_argument('-ph', '--phase', type=str, choices=['train','test'], help='Run train or test', default='test')
-    parser.add_argument('-o', '--out_dir', type=str, default='/user/gparrella/Palette-Image-to-Image-Diffusion-Models/to_test', help='Output directory in which save images.')
+    parser.add_argument('-o', '--out_dir', type=str, default='/user/gparrella/Palette-Image-to-Image-Diffusion-Models/to_test/images', help='Output directory in which save images.')
     parser.add_argument('-b', '--batch', type=int, default=None, help='Batch size in every gpu')
     parser.add_argument('-gpu', '--gpu_ids', type=str, default=None)
     parser.add_argument('-d', '--debug', action='store_true')
